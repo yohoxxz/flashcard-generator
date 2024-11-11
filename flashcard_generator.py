@@ -143,46 +143,52 @@ def create_html(flashcards):
             width: 90%;
             max-width: 600px;
             min-height: 300px;
-            opacity: 0;
-            visibility: hidden;
             background: linear-gradient(145deg, #2d2d2d, #2a2a2a);
             border: 1px solid #3d3d3d;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
             padding: 40px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             cursor: pointer;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            opacity: 0;
+            visibility: hidden;
         }
         .flashcard.active {
             opacity: 1;
             visibility: visible;
-            transform: translateX(0);
         }
-        .flashcard:not(.active) {
-            pointer-events: none;
+        .flashcard.flipped {
+            transform: rotateX(180deg);
         }
-        .question { 
+        .question, .answer { 
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+        }
+        .question {
             font-weight: 600;
             font-size: 1.8em;
             color: #fff;
-            text-align: center;
-            margin-bottom: 30px;
-            line-height: 1.5;
-            letter-spacing: 0.3px;
+            transform: rotateX(0deg);
         }
         .answer { 
-            display: none;
             color: #d4d4d4;
-            text-align: center;
-            padding: 30px;
-            border-top: 1px solid #3d3d3d;
-            line-height: 1.6;
             font-size: 1.4em;
             letter-spacing: 0.2px;
-            animation: fadeIn 0.5s ease-in-out;
+            transform: rotateX(180deg);
+            border-top: none;
         }
         #progress-bar {
             position: fixed;
@@ -308,24 +314,7 @@ def create_html(flashcards):
 
             window.toggleAnswer = function(event) {
                 const card = event.currentTarget;
-                const answer = card.querySelector(".answer");
-                const isHiding = answer.style.display === "block";
-                
-                if (!isHiding) {
-                    answer.style.display = "block";
-                    answer.style.opacity = "0";
-                    answer.style.transform = "translateY(10px)";
-                    setTimeout(() => {
-                        answer.style.opacity = "1";
-                        answer.style.transform = "translateY(0)";
-                    }, 10);
-                } else {
-                    answer.style.opacity = "0";
-                    answer.style.transform = "translateY(10px)";
-                    setTimeout(() => {
-                        answer.style.display = "none";
-                    }, 300);
-                }
+                card.classList.toggle('flipped');
             }
 
             // Initialize
@@ -338,7 +327,6 @@ def create_html(flashcards):
         <div id="progress-fill"></div>
     </div>
     <div id="card-counter"></div>
-    <h1>Generated Flashcards</h1>
     <div id="flashcards">'''
 
     for flashcard in flashcards:
