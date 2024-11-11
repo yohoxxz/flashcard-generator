@@ -100,7 +100,7 @@ def create_html(flashcards):
         
     print(f"Debug: Received {len(flashcards)} flashcards")
     for i, card in enumerate(flashcards):
-        print(f"Debug: Card {i+1}: {card[:100]}...")  # Print first 100 chars of each card
+        print(f"Debug: Card {i+1}: {card[:100]}...")
 
     # Create the HTML content with improved styling
     html_content = '''<!DOCTYPE html>
@@ -117,6 +117,7 @@ def create_html(flashcards):
             background-color: #1a1a1a;
             color: #fff;
             min-height: 100vh;
+            line-height: 1.6;
         }
         h1 {
             text-align: center;
@@ -125,154 +126,212 @@ def create_html(flashcards):
             font-size: 2.5em;
             text-shadow: 0 0 10px rgba(255,255,255,0.1);
         }
-        .flashcard { 
-            background-color: #2d2d2d;
-            border: 1px solid #3d3d3d;
-            padding: 30px;
+        #flashcards {
+            position: relative;
+            min-height: 400px;
             margin: 20px auto;
-            cursor: pointer;
+            max-width: 800px;
+        }
+        .flashcard { 
+            position: absolute;
+            width: 100%;
+            min-height: 300px;
+            display: none;
+            padding: 40px;
+            margin: 0;
+            background: linear-gradient(145deg, #2d2d2d, #2a2a2a);
+            border: 1px solid #3d3d3d;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            max-width: 600px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
-        .flashcard:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            background-color: #333333;
-        }
-        .flashcard:active {
-            transform: translateY(0) scale(0.98);
+        .flashcard.active {
+            display: flex;
         }
         .question { 
             font-weight: 600;
-            font-size: 1.3em;
+            font-size: 1.8em;
             color: #fff;
             text-align: center;
-            margin-bottom: 15px;
-            line-height: 1.4;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            letter-spacing: 0.3px;
         }
         .answer { 
             display: none;
-            margin-top: 20px;
-            color: #b3b3b3;
+            margin-top: 15px;
+            color: #d4d4d4;
             text-align: center;
-            padding-top: 15px;
+            padding: 30px;
             border-top: 1px solid #3d3d3d;
-            line-height: 1.5;
+            line-height: 1.6;
+            font-size: 1.4em;
+            letter-spacing: 0.2px;
             animation: fadeIn 0.5s ease-in-out;
         }
-        .flashcard::after {
-            content: "Click to reveal answer";
-            position: absolute;
-            bottom: 10px;
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #333;
+            z-index: 1000;
+        }
+        #progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            transition: width 0.3s ease;
+        }
+        #card-counter {
+            position: fixed;
+            top: 20px;
             left: 50%;
             transform: translateX(-50%);
+            background: rgba(45, 45, 45, 0.9);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            z-index: 1000;
+        }
+        #shortcuts-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(45, 45, 45, 0.9);
+            padding: 10px 15px;
+            border-radius: 8px;
             font-size: 0.8em;
-            color: #666;
-            opacity: 0.7;
-            transition: opacity 0.3s ease;
+            color: #aaa;
         }
-        .flashcard:hover::after {
-            opacity: 1;
-            color: #888;
+        .navigation {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
         }
-        .flashcard.show-answer::after {
-            content: "Click to hide answer";
+        .navigation button {
+            padding: 12px 24px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 8px;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .navigation button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .navigation button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
         }
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        .flashcard {
-            animation: slideIn 0.5s ease-out;
-            animation-fill-mode: both;
-        }
-        .flashcard:nth-child(1) { animation-delay: 0.1s; }
-        .flashcard:nth-child(2) { animation-delay: 0.2s; }
-        .flashcard:nth-child(3) { animation-delay: 0.3s; }
-        .flashcard:nth-child(4) { animation-delay: 0.4s; }
-        .flashcard:nth-child(5) { animation-delay: 0.5s; }
-        
-        /* Glowing effect on hover */
-        .flashcard:hover {
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3),
-                        0 0 20px rgba(255,255,255,0.05),
-                        0 0 40px rgba(255,255,255,0.02);
-        }
-        
-        /* Smooth transition for answer reveal */
-        .answer {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        @media (max-width: 600px) {
-            body {
-                padding: 15px;
-            }
-            .flashcard {
-                padding: 20px;
-                margin: 15px auto;
-            }
-            h1 {
-                font-size: 2em;
-            }
-        }
-        
-        /* Selection color */
-        ::selection {
-            background: #404040;
-            color: #fff;
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
     <script>
-        function toggleAnswer(event) {
-            const card = event.currentTarget;
-            const answer = card.querySelector(".answer");
-            const isHiding = answer.style.display === "block";
-            
-            answer.style.opacity = "0";
-            answer.style.transform = "translateY(10px)";
-            
-            if (!isHiding) {
-                answer.style.display = "block";
-                setTimeout(() => {
-                    answer.style.opacity = "1";
-                    answer.style.transform = "translateY(0)";
-                }, 10);
-                card.classList.add("show-answer");
-            } else {
-                setTimeout(() => {
-                    answer.style.display = "none";
-                }, 300);
-                card.classList.remove("show-answer");
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.flashcard');
+            let currentCard = 0;
+
+            function initializeCards() {
+                cards[0].classList.add('active');
+                updateNavButtons();
+                updateProgress();
             }
-        }
-        
-        // Add entrance animations when page loads
-        document.addEventListener("DOMContentLoaded", function() {
-            const cards = document.querySelectorAll(".flashcard");
-            cards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
+
+            window.nextCard = function() {
+                if (currentCard < cards.length - 1) {
+                    cards[currentCard].classList.remove('active');
+                    currentCard++;
+                    cards[currentCard].classList.add('active');
+                    updateNavButtons();
+                    updateProgress();
+                }
+            }
+
+            window.previousCard = function() {
+                if (currentCard > 0) {
+                    cards[currentCard].classList.remove('active');
+                    currentCard--;
+                    cards[currentCard].classList.add('active');
+                    updateNavButtons();
+                    updateProgress();
+                }
+            }
+
+            function updateNavButtons() {
+                document.getElementById('prevBtn').disabled = currentCard === 0;
+                document.getElementById('nextBtn').disabled = currentCard === cards.length - 1;
+            }
+
+            function updateProgress() {
+                const progress = ((currentCard + 1) / cards.length) * 100;
+                document.getElementById('progress-fill').style.width = progress + '%';
+                document.getElementById('card-counter').textContent = `Card ${currentCard + 1} of ${cards.length}`;
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'ArrowLeft' && currentCard > 0) {
+                    previousCard();
+                }
+                if (e.code === 'ArrowRight' && currentCard < cards.length - 1) {
+                    nextCard();
+                }
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    toggleAnswer({ currentTarget: cards[currentCard] });
+                }
             });
+
+            window.toggleAnswer = function(event) {
+                const card = event.currentTarget;
+                const answer = card.querySelector(".answer");
+                const isHiding = answer.style.display === "block";
+                
+                if (!isHiding) {
+                    answer.style.display = "block";
+                    answer.style.opacity = "0";
+                    answer.style.transform = "translateY(10px)";
+                    setTimeout(() => {
+                        answer.style.opacity = "1";
+                        answer.style.transform = "translateY(0)";
+                    }, 10);
+                } else {
+                    answer.style.opacity = "0";
+                    answer.style.transform = "translateY(10px)";
+                    setTimeout(() => {
+                        answer.style.display = "none";
+                    }, 300);
+                }
+            }
+
+            document.body.insertAdjacentHTML('afterbegin', `
+                <div id="progress-bar">
+                    <div id="progress-fill"></div>
+                </div>
+                <div id="card-counter">Card 1 of ${cards.length}</div>
+                <div id="shortcuts-info">
+                    Shortcuts: ← Previous | → Next | Space Toggle
+                </div>
+            `);
+
+            initializeCards();
         });
     </script>
 </head>
@@ -288,15 +347,19 @@ def create_html(flashcards):
                 answer = answer_part.strip()
                 
                 html_content += f'''
-    <div class="flashcard" onclick="toggleAnswer(event)">
-        <div class="question">{question}</div>
-        <div class="answer">{answer}</div>
-    </div>'''
+        <div class="flashcard" onclick="toggleAnswer(event)">
+            <div class="question">{question}</div>
+            <div class="answer">{answer}</div>
+        </div>'''
             except Exception as e:
                 print(f"Skipping malformed flashcard: {flashcard}")
                 continue
 
     html_content += '''
+    </div>
+    <div class="navigation">
+        <button id="prevBtn" onclick="previousCard()">← Previous</button>
+        <button id="nextBtn" onclick="nextCard()">Next →</button>
     </div>
 </body>
 </html>'''
