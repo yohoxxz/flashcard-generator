@@ -12,6 +12,7 @@
             background-color: #1a1a1a;
             color: #fff;
             min-height: 100vh;
+            line-height: 1.6;
         }
         h1 {
             text-align: center;
@@ -21,10 +22,10 @@
             text-shadow: 0 0 10px rgba(255,255,255,0.1);
         }
         .flashcard { 
-            background-color: #2d2d2d;
+            background: linear-gradient(145deg, #2d2d2d, #2a2a2a);
             border: 1px solid #3d3d3d;
-            padding: 30px;
-            margin: 20px auto;
+            padding: 25px 30px;
+            margin: 15px auto;
             cursor: pointer;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
@@ -47,25 +48,28 @@
             color: #fff;
             text-align: center;
             margin-bottom: 15px;
-            line-height: 1.4;
+            line-height: 1.5;
+            letter-spacing: 0.3px;
         }
         .answer { 
             display: none;
-            margin-top: 20px;
-            color: #b3b3b3;
+            margin-top: 15px;
+            color: #d4d4d4;
             text-align: center;
-            padding-top: 15px;
+            padding: 15px 20px;
             border-top: 1px solid #3d3d3d;
-            line-height: 1.5;
+            line-height: 1.6;
+            font-size: 1.1em;
+            letter-spacing: 0.2px;
             animation: fadeIn 0.5s ease-in-out;
         }
         .flashcard::after {
             content: "Click to reveal answer";
             position: absolute;
-            bottom: 10px;
+            bottom: 5px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 0.8em;
+            font-size: 0.75em;
             color: #666;
             opacity: 0.7;
             transition: opacity 0.3s ease;
@@ -137,37 +141,221 @@
             background: #404040;
             color: #fff;
         }
+        
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #333;
+            z-index: 1000;
+        }
+
+        #progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            transition: width 0.3s ease;
+        }
+
+        #shortcuts-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(45, 45, 45, 0.9);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            color: #aaa;
+        }
+
+        #card-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(45, 45, 45, 0.9);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        #flashcards {
+            position: relative;
+            min-height: 400px;  /* Ensure consistent height */
+            margin: 20px auto;
+            max-width: 800px;
+        }
+
+        .flashcard {
+            position: absolute;
+            width: 100%;
+            min-height: 300px;  /* Taller cards */
+            display: none;  /* Hide all cards by default */
+            padding: 40px;  /* More padding */
+            margin: 0;  /* Remove margin since we're using absolute positioning */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .flashcard.active {
+            display: flex;  /* Show only active card */
+        }
+
+        .question {
+            font-size: 1.8em;  /* Larger text */
+            margin-bottom: 30px;
+        }
+
+        .answer {
+            font-size: 1.4em;  /* Larger text */
+            padding: 30px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .navigation button {
+            padding: 12px 24px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 8px;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .navigation button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .navigation button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Update card counter position */
+        #card-counter {
+            position: fixed;
+            top: 20px;
+            left: 50%;  /* Changed from right to left */
+            transform: translateX(-50%);  /* Center horizontally */
+            background: rgba(45, 45, 45, 0.9);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            z-index: 1000;
+        }
     </style>
     <script>
-        function toggleAnswer(event) {
-            const card = event.currentTarget;
-            const answer = card.querySelector(".answer");
-            const isHiding = answer.style.display === "block";
-            
-            answer.style.opacity = "0";
-            answer.style.transform = "translateY(10px)";
-            
-            if (!isHiding) {
-                answer.style.display = "block";
-                setTimeout(() => {
-                    answer.style.opacity = "1";
-                    answer.style.transform = "translateY(0)";
-                }, 10);
-                card.classList.add("show-answer");
-            } else {
-                setTimeout(() => {
-                    answer.style.display = "none";
-                }, 300);
-                card.classList.remove("show-answer");
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.flashcard');
+            let currentCard = 0;
+
+            // Initialize first card
+            function initializeCards() {
+                cards[0].classList.add('active');
+                updateNavButtons();
+                updateProgress();
             }
-        }
-        
-        // Add entrance animations when page loads
-        document.addEventListener("DOMContentLoaded", function() {
-            const cards = document.querySelectorAll(".flashcard");
-            cards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
+
+            // Navigation functions
+            window.nextCard = function() {
+                if (currentCard < cards.length - 1) {
+                    cards[currentCard].classList.remove('active');
+                    currentCard++;
+                    cards[currentCard].classList.add('active');
+                    updateNavButtons();
+                    updateProgress();
+                }
+            }
+
+            window.previousCard = function() {
+                if (currentCard > 0) {
+                    cards[currentCard].classList.remove('active');
+                    currentCard--;
+                    cards[currentCard].classList.add('active');
+                    updateNavButtons();
+                    updateProgress();
+                }
+            }
+
+            function updateNavButtons() {
+                document.getElementById('prevBtn').disabled = currentCard === 0;
+                document.getElementById('nextBtn').disabled = currentCard === cards.length - 1;
+            }
+
+            function updateProgress() {
+                const progress = ((currentCard + 1) / cards.length) * 100;
+                document.getElementById('progress-fill').style.width = progress + '%';
+                document.getElementById('card-counter').textContent = `Card ${currentCard + 1} of ${cards.length}`;
+            }
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'ArrowLeft' && currentCard > 0) {
+                    previousCard();
+                }
+                if (e.code === 'ArrowRight' && currentCard < cards.length - 1) {
+                    nextCard();
+                }
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    toggleAnswer({ currentTarget: cards[currentCard] });
+                }
             });
+
+            // Toggle answer function
+            window.toggleAnswer = function(event) {
+                const card = event.currentTarget;
+                const answer = card.querySelector(".answer");
+                const isHiding = answer.style.display === "block";
+                
+                if (!isHiding) {
+                    answer.style.display = "block";
+                    answer.style.opacity = "0";
+                    answer.style.transform = "translateY(10px)";
+                    setTimeout(() => {
+                        answer.style.opacity = "1";
+                        answer.style.transform = "translateY(0)";
+                    }, 10);
+                    card.classList.add("show-answer");
+                } else {
+                    answer.style.opacity = "0";
+                    answer.style.transform = "translateY(10px)";
+                    setTimeout(() => {
+                        answer.style.display = "none";
+                    }, 300);
+                    card.classList.remove("show-answer");
+                }
+            }
+
+            // Add progress bar and info elements
+            document.body.insertAdjacentHTML('afterbegin', `
+                <div id="progress-bar">
+                    <div id="progress-fill"></div>
+                </div>
+                <div id="card-counter">Card 1 of ${cards.length}</div>
+                <div id="shortcuts-info">
+                    Shortcuts: ← Previous | → Next | Space Toggle
+                </div>
+            `);
+
+            // Initialize the cards
+            initializeCards();
         });
     </script>
 </head>
@@ -194,6 +382,10 @@
         <div class="question">What celestial objects are found in the solar system?</div>
         <div class="answer">The solar system contains the Sun, planets, dwarf planets like Pluto, comets, asteroids, and meteoroids.</div>
     </div>
+    </div>
+    <div class="navigation">
+        <button id="prevBtn" onclick="previousCard()">← Previous</button>
+        <button id="nextBtn" onclick="nextCard()">Next →</button>
     </div>
 </body>
 </html>
