@@ -5,6 +5,7 @@ from openai import OpenAI
 from pdfminer.high_level import extract_text
 from dotenv import load_dotenv
 import tempfile
+import datetime
 
 def generate_flashcards(text):
     # For testing - remove this return statement once API is working
@@ -309,39 +310,26 @@ def create_html(flashcards):
 </body>
 </html>'''
 
-    # Try different locations to write the file
-    possible_locations = [
-        ("current directory", os.path.join(os.getcwd(), "flashcards.html")),
-        ("Documents folder", os.path.join(os.path.expanduser('~'), "Documents", "flashcards.html")),
-        ("Home directory", os.path.join(os.path.expanduser('~'), "flashcards.html")),
-        ("Temp directory", os.path.join(tempfile.gettempdir(), "flashcards.html"))
-    ]
-
-    for location_name, output_file in possible_locations:
-        try:
-            # Normalize the path to use correct system separators
-            output_file = os.path.normpath(output_file)
-            
-            # Get the directory path
-            directory = os.path.dirname(output_file)
-            
-            # Create directory if it doesn't exist (skip for current directory)
-            if directory and not os.path.exists(directory):
-                os.makedirs(directory)
-            
-            with open(output_file, "w", encoding='utf-8') as file:
-                file.write(html_content)
-            print(f"\nSuccessfully wrote file to {location_name}: {output_file}")
-            return True, output_file
-        except Exception as e:
-            if location_name == "current directory":
-                # Skip error message for current directory if it fails
-                continue
-            print(f"\nFailed to write to {location_name}: {str(e)}")
-            continue
-
-    print("\nFailed to write file to any location")
-    return False, None
+    try:
+        # Get downloads folder path
+        downloads_path = os.path.join(os.path.expanduser('~'), 'Downloads')
+        
+        # Generate unique filename with timestamp
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"flashcards_{timestamp}.html"
+        output_file = os.path.join(downloads_path, filename)
+        
+        # Normalize the path to use correct system separators
+        output_file = os.path.normpath(output_file)
+        
+        with open(output_file, "w", encoding='utf-8') as file:
+            file.write(html_content)
+        print(f"\nSuccessfully wrote file to Downloads folder: {output_file}")
+        return True, output_file
+        
+    except Exception as e:
+        print(f"\nFailed to write file: {str(e)}")
+        return False, None
 
 def main():
     load_dotenv()
