@@ -57,7 +57,18 @@ def create_html(flashcards):
         return False
         
     try:
-        with open("flashcards.html", "w", encoding='utf-8') as file:
+        # First try to write to the current directory
+        output_file = "flashcards.html"
+        
+        # If that fails, try writing to the user's documents folder
+        if not os.access(os.getcwd(), os.W_OK):
+            documents_path = os.path.expanduser('~/Documents')
+            if not os.path.exists(documents_path):
+                documents_path = os.path.expanduser('~')
+            output_file = os.path.join(documents_path, "flashcards.html")
+            print(f"\nNote: Writing file to {output_file} due to permission restrictions in current directory.")
+        
+        with open(output_file, "w", encoding='utf-8') as file:
             html_content = '''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -121,10 +132,22 @@ def create_html(flashcards):
 </html>'''
             
             file.write(html_content)
-            return True
+            return True, output_file
     except Exception as e:
-        print(f"Error creating HTML file: {str(e)}")
-        return False
+        print(f"\nError creating HTML file: {str(e)}")
+        try:
+            # Last resort - try temp directory
+            import tempfile
+            temp_dir = tempfile.gettempdir()
+            output_file = os.path.join(temp_dir, "flashcards.html")
+            print(f"\nAttempting to write to temporary directory: {output_file}")
+            
+            with open(output_file, "w", encoding='utf-8') as file:
+                file.write(html_content)
+            return True, output_file
+        except Exception as e2:
+            print(f"Failed to write to temporary directory: {str(e2)}")
+            return False, None
 
 def main():
     load_dotenv()
@@ -155,7 +178,6 @@ def main():
                 print("(Press Ctrl+Z on Windows or Ctrl+D on Unix and then Enter to finish)")
                 print("-" * 50)
                 
-                # Read all input until EOF (Ctrl+Z/Ctrl+D)
                 contents = []
                 try:
                     while True:
@@ -182,8 +204,15 @@ def main():
             print("\nGenerating flashcards... This may take a moment.")
             flashcards = generate_flashcards(text)
             
-            if create_html(flashcards):
-                print("Flashcards HTML file generated successfully as 'flashcards.html'.")
+            success, file_path = create_html(flashcards)
+            if success:
+                print(f"\nFlashcards HTML file generated successfully at: {file_path}")
+                # Try to open the file in the default browser
+                try:
+                    import webbrowser
+                    webbrowser.open(f'file://{os.path.abspath(file_path)}')
+                except Exception as e:
+                    print(f"Note: Could not automatically open the file: {str(e)}")
             else:
                 print("Failed to generate flashcards HTML file.")
                 
