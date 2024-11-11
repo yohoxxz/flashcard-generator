@@ -9,35 +9,104 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
         }
         .flashcard { 
+            background-color: white;
             border: 1px solid #ddd;
-            padding: 20px;
-            margin: 10px;
+            padding: 30px;
+            margin: 20px auto;
             cursor: pointer;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .question { font-weight: bold; }
-        .answer { 
-            display: none;
-            margin-top: 10px;
-            color: #444;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 600px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
         }
         .flashcard:hover {
-            background-color: #f9f9f9;
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .question { 
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .answer { 
+            display: none;
+            margin-top: 20px;
+            color: #444;
+            text-align: center;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        .flashcard::after {
+            content: "Click to reveal answer";
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8em;
+            color: #888;
+            opacity: 0.7;
+        }
+        .flashcard.show-answer::after {
+            content: "Click to hide answer";
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .flashcard {
+                padding: 20px;
+                margin: 15px auto;
+            }
         }
     </style>
     <script>
         function toggleAnswer(event) {
-            const answer = event.currentTarget.querySelector(".answer");
-            answer.style.display = answer.style.display === "block" ? "none" : "block";
+            const card = event.currentTarget;
+            const answer = card.querySelector(".answer");
+            if (answer.style.display === "block") {
+                answer.style.display = "none";
+                card.classList.remove("show-answer");
+            } else {
+                answer.style.display = "block";
+                card.classList.add("show-answer");
+            }
         }
     </script>
 </head>
 <body>
     <h1>Generated Flashcards</h1>
     <div id="flashcards">
+    <div class="flashcard" onclick="toggleAnswer(event)">
+        <div class="question">What are the eight planets in our solar system?</div>
+        <div class="answer">Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, and Neptune.</div>
+    </div>
+    <div class="flashcard" onclick="toggleAnswer(event)">
+        <div class="question">Which planet is the largest?</div>
+        <div class="answer">Jupiter is the largest planet.</div>
+    </div>
+    <div class="flashcard" onclick="toggleAnswer(event)">
+        <div class="question">What makes Earth unique?</div>
+        <div class="answer">Earth is unique for sustaining life due to its atmosphere and liquid water.</div>
+    </div>
+    <div class="flashcard" onclick="toggleAnswer(event)">
+        <div class="question">What is the smallest planet?</div>
+        <div class="answer">Mercury is the smallest planet.</div>
+    </div>
+    <div class="flashcard" onclick="toggleAnswer(event)">
+        <div class="question">What celestial objects are found in the solar system?</div>
+        <div class="answer">The solar system contains the Sun, planets, dwarf planets like Pluto, comets, asteroids, and meteoroids.</div>
+    </div>
     </div>
 </body>
 </html>
