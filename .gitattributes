@@ -1,2 +1,39 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Python files
+*.py text diff=python
+
+# HTML files
+*.html text diff=html
+
+# Environment files
+*.env text
+.env.* text
+
+# Documentation
+*.md text diff=markdown
+*.txt text
+
+# Configuration files
+*.json text
+*.yaml text
+*.yml text
+
+# Git files
+.gitattributes text
+.gitignore text
+
+# Force batch scripts to use CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Force bash scripts to use LF
+*.sh text eol=lf
+
+# Binary files (no modification)
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
