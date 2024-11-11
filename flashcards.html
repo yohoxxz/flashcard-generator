@@ -5,47 +5,59 @@
     <title>Flashcards</title>
     <style>
         body { 
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f0f0f0;
+            background-color: #1a1a1a;
+            color: #fff;
+            min-height: 100vh;
         }
         h1 {
             text-align: center;
-            color: #333;
+            color: #fff;
             margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 0 0 10px rgba(255,255,255,0.1);
         }
         .flashcard { 
-            background-color: white;
-            border: 1px solid #ddd;
+            background-color: #2d2d2d;
+            border: 1px solid #3d3d3d;
             padding: 30px;
             margin: 20px auto;
             cursor: pointer;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             max-width: 600px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            overflow: hidden;
         }
         .flashcard:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            background-color: #333333;
+        }
+        .flashcard:active {
+            transform: translateY(0) scale(0.98);
         }
         .question { 
-            font-weight: bold;
-            font-size: 1.2em;
-            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1.3em;
+            color: #fff;
             text-align: center;
             margin-bottom: 15px;
+            line-height: 1.4;
         }
         .answer { 
             display: none;
             margin-top: 20px;
-            color: #444;
+            color: #b3b3b3;
             text-align: center;
             padding-top: 15px;
-            border-top: 1px solid #eee;
+            border-top: 1px solid #3d3d3d;
+            line-height: 1.5;
+            animation: fadeIn 0.5s ease-in-out;
         }
         .flashcard::after {
             content: "Click to reveal answer";
@@ -54,34 +66,109 @@
             left: 50%;
             transform: translateX(-50%);
             font-size: 0.8em;
-            color: #888;
+            color: #666;
             opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+        .flashcard:hover::after {
+            opacity: 1;
+            color: #888;
         }
         .flashcard.show-answer::after {
             content: "Click to hide answer";
         }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .flashcard {
+            animation: slideIn 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+        .flashcard:nth-child(1) { animation-delay: 0.1s; }
+        .flashcard:nth-child(2) { animation-delay: 0.2s; }
+        .flashcard:nth-child(3) { animation-delay: 0.3s; }
+        .flashcard:nth-child(4) { animation-delay: 0.4s; }
+        .flashcard:nth-child(5) { animation-delay: 0.5s; }
+        
+        /* Glowing effect on hover */
+        .flashcard:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3),
+                        0 0 20px rgba(255,255,255,0.05),
+                        0 0 40px rgba(255,255,255,0.02);
+        }
+        
+        /* Smooth transition for answer reveal */
+        .answer {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
         @media (max-width: 600px) {
             body {
-                padding: 10px;
+                padding: 15px;
             }
             .flashcard {
                 padding: 20px;
                 margin: 15px auto;
             }
+            h1 {
+                font-size: 2em;
+            }
+        }
+        
+        /* Selection color */
+        ::selection {
+            background: #404040;
+            color: #fff;
         }
     </style>
     <script>
         function toggleAnswer(event) {
             const card = event.currentTarget;
             const answer = card.querySelector(".answer");
-            if (answer.style.display === "block") {
-                answer.style.display = "none";
-                card.classList.remove("show-answer");
-            } else {
+            const isHiding = answer.style.display === "block";
+            
+            answer.style.opacity = "0";
+            answer.style.transform = "translateY(10px)";
+            
+            if (!isHiding) {
                 answer.style.display = "block";
+                setTimeout(() => {
+                    answer.style.opacity = "1";
+                    answer.style.transform = "translateY(0)";
+                }, 10);
                 card.classList.add("show-answer");
+            } else {
+                setTimeout(() => {
+                    answer.style.display = "none";
+                }, 300);
+                card.classList.remove("show-answer");
             }
         }
+        
+        // Add entrance animations when page loads
+        document.addEventListener("DOMContentLoaded", function() {
+            const cards = document.querySelectorAll(".flashcard");
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
     </script>
 </head>
 <body>
