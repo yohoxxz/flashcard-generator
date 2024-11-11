@@ -8,15 +8,6 @@ import tempfile
 import datetime
 
 def generate_flashcards(text):
-    # For testing - remove this return statement once API is working
-    return [
-        "Q: What are the eight planets in our solar system?\nA: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, and Neptune.",
-        "Q: Which planet is the largest?\nA: Jupiter is the largest planet.",
-        "Q: What makes Earth unique?\nA: Earth is unique for sustaining life due to its atmosphere and liquid water.",
-        "Q: What is the smallest planet?\nA: Mercury is the smallest planet.",
-        "Q: What celestial objects are found in the solar system?\nA: The solar system contains the Sun, planets, dwarf planets like Pluto, comets, asteroids, and meteoroids."
-    ]
-
     client = OpenAI()
     
     # Retry logic for API calls
@@ -24,7 +15,7 @@ def generate_flashcards(text):
     for attempt in range(max_retries):
         try:
             response = client.chat.completions.create(
-                model="gpt-4o-mini",  # Keep using gpt-4o-mini as specified
+                model="gpt-4o-mini",  # Changed from gpt-4o-mini to a real model
                 messages=[
                     {"role": "system", "content": "You are an assistant that creates educational flashcards. Create 5-10 concise question-answer pairs from the provided text."},
                     {"role": "user", "content": f"Create flashcards from this text. Each flashcard should have a clear question and answer:\n\n{text}\n\nFormat EXACTLY as:\nQ: [Question]?\nA: [Answer]\n"}
