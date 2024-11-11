@@ -122,22 +122,32 @@ def create_html(flashcards):
 
     # Try different locations to write the file
     possible_locations = [
-        ("current directory", "flashcards.html"),
-        ("Documents folder", os.path.join(os.path.expanduser('~/Documents'), "flashcards.html")),
+        ("current directory", os.path.join(os.getcwd(), "flashcards.html")),
+        ("Documents folder", os.path.join(os.path.expanduser('~'), "Documents", "flashcards.html")),
         ("Home directory", os.path.join(os.path.expanduser('~'), "flashcards.html")),
         ("Temp directory", os.path.join(tempfile.gettempdir(), "flashcards.html"))
     ]
 
     for location_name, output_file in possible_locations:
         try:
-            # Ensure the directory exists
-            os.makedirs(os.path.dirname(output_file), exist_ok=True)
+            # Normalize the path to use correct system separators
+            output_file = os.path.normpath(output_file)
+            
+            # Get the directory path
+            directory = os.path.dirname(output_file)
+            
+            # Create directory if it doesn't exist (skip for current directory)
+            if directory and not os.path.exists(directory):
+                os.makedirs(directory)
             
             with open(output_file, "w", encoding='utf-8') as file:
                 file.write(html_content)
             print(f"\nSuccessfully wrote file to {location_name}: {output_file}")
             return True, output_file
         except Exception as e:
+            if location_name == "current directory":
+                # Skip error message for current directory if it fails
+                continue
             print(f"\nFailed to write to {location_name}: {str(e)}")
             continue
 
