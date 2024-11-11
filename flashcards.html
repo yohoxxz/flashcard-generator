@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flashcards</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .flashcard { 
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .question { font-weight: bold; }
+        .answer { 
+            display: none;
+            margin-top: 10px;
+            color: #444;
+        }
+        .flashcard:hover {
+            background-color: #f9f9f9;
+        }
+    </style>
+    <script>
+        function toggleAnswer(event) {
+            const answer = event.currentTarget.querySelector(".answer");
+            answer.style.display = answer.style.display === "block" ? "none" : "block";
+        }
+    </script>
+</head>
+<body>
+    <h1>Generated Flashcards</h1>
+    <div id="flashcards">
+    </div>
+</body>
+</html>
