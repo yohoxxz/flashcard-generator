@@ -4,6 +4,7 @@ import os
 from openai import OpenAI
 from pdfminer.high_level import extract_text
 from dotenv import load_dotenv
+import tempfile
 
 def generate_flashcards(text):
     client = OpenAI()
@@ -54,22 +55,10 @@ def process_pdf(file_path):
 
 def create_html(flashcards):
     if not flashcards:
-        return False
+        return False, None
         
-    try:
-        # First try to write to the current directory
-        output_file = "flashcards.html"
-        
-        # If that fails, try writing to the user's documents folder
-        if not os.access(os.getcwd(), os.W_OK):
-            documents_path = os.path.expanduser('~/Documents')
-            if not os.path.exists(documents_path):
-                documents_path = os.path.expanduser('~')
-            output_file = os.path.join(documents_path, "flashcards.html")
-            print(f"\nNote: Writing file to {output_file} due to permission restrictions in current directory.")
-        
-        with open(output_file, "w", encoding='utf-8') as file:
-            html_content = '''<!DOCTYPE html>
+    # Create the HTML content first
+    html_content = '''<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -110,44 +99,50 @@ def create_html(flashcards):
     <h1>Generated Flashcards</h1>
     <div id="flashcards">'''
 
-            for flashcard in flashcards:
-                if flashcard.strip() and 'Q:' in flashcard and 'A:' in flashcard:
-                    try:
-                        question_part, answer_part = flashcard.split('A:', 1)
-                        question = question_part.replace('Q:', '').strip()
-                        answer = answer_part.strip()
-                        
-                        html_content += f'''
-        <div class="flashcard" onclick="toggleAnswer(event)">
-            <div class="question">{question}</div>
-            <div class="answer">{answer}</div>
-        </div>'''
-                    except Exception as e:
-                        print(f"Skipping malformed flashcard: {flashcard}")
-                        continue
+    for flashcard in flashcards:
+        if flashcard.strip() and 'Q:' in flashcard and 'A:' in flashcard:
+            try:
+                question_part, answer_part = flashcard.split('A:', 1)
+                question = question_part.replace('Q:', '').strip()
+                answer = answer_part.strip()
+                
+                html_content += f'''
+    <div class="flashcard" onclick="toggleAnswer(event)">
+        <div class="question">{question}</div>
+        <div class="answer">{answer}</div>
+    </div>'''
+            except Exception as e:
+                print(f"Skipping malformed flashcard: {flashcard}")
+                continue
 
-            html_content += '''
+    html_content += '''
     </div>
 </body>
 </html>'''
-            
-            file.write(html_content)
-            return True, output_file
-    except Exception as e:
-        print(f"\nError creating HTML file: {str(e)}")
+
+    # Try different locations to write the file
+    possible_locations = [
+        ("current directory", "flashcards.html"),
+        ("Documents folder", os.path.join(os.path.expanduser('~/Documents'), "flashcards.html")),
+        ("Home directory", os.path.join(os.path.expanduser('~'), "flashcards.html")),
+        ("Temp directory", os.path.join(tempfile.gettempdir(), "flashcards.html"))
+    ]
+
+    for location_name, output_file in possible_locations:
         try:
-            # Last resort - try temp directory
-            import tempfile
-            temp_dir = tempfile.gettempdir()
-            output_file = os.path.join(temp_dir, "flashcards.html")
-            print(f"\nAttempting to write to temporary directory: {output_file}")
+            # Ensure the directory exists
+            os.makedirs(os.path.dirname(output_file), exist_ok=True)
             
             with open(output_file, "w", encoding='utf-8') as file:
                 file.write(html_content)
+            print(f"\nSuccessfully wrote file to {location_name}: {output_file}")
             return True, output_file
-        except Exception as e2:
-            print(f"Failed to write to temporary directory: {str(e2)}")
-            return False, None
+        except Exception as e:
+            print(f"\nFailed to write to {location_name}: {str(e)}")
+            continue
+
+    print("\nFailed to write file to any location")
+    return False, None
 
 def main():
     load_dotenv()
