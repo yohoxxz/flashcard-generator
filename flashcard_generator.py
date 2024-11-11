@@ -118,6 +118,9 @@ def create_html(flashcards):
             color: #fff;
             min-height: 100vh;
             line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         h1 {
             text-align: center;
@@ -128,29 +131,38 @@ def create_html(flashcards):
         }
         #flashcards {
             position: relative;
+            width: 100%;
+            height: 60vh;
             min-height: 400px;
-            margin: 20px auto;
-            max-width: 800px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .flashcard { 
             position: absolute;
-            width: 100%;
+            width: 90%;
+            max-width: 600px;
             min-height: 300px;
-            display: none;
-            padding: 40px;
-            margin: 0;
+            opacity: 0;
+            visibility: hidden;
             background: linear-gradient(145deg, #2d2d2d, #2a2a2a);
             border: 1px solid #3d3d3d;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 40px;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            cursor: pointer;
         }
         .flashcard.active {
-            display: flex;
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+        .flashcard:not(.active) {
+            pointer-events: none;
         }
         .question { 
             font-weight: 600;
@@ -163,7 +175,6 @@ def create_html(flashcards):
         }
         .answer { 
             display: none;
-            margin-top: 15px;
             color: #d4d4d4;
             text-align: center;
             padding: 30px;
@@ -178,7 +189,7 @@ def create_html(flashcards):
             top: 0;
             left: 0;
             width: 100%;
-            height: 3px;
+            height: 4px;
             background: #333;
             z-index: 1000;
         }
@@ -199,21 +210,8 @@ def create_html(flashcards):
             font-size: 1.1em;
             z-index: 1000;
         }
-        #shortcuts-info {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(45, 45, 45, 0.9);
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 0.8em;
-            color: #aaa;
-        }
         .navigation {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
+            margin-top: 20px;
             display: flex;
             gap: 20px;
             z-index: 1000;
@@ -229,7 +227,7 @@ def create_html(flashcards):
             transition: all 0.3s ease;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
-        .navigation button:hover {
+        .navigation button:hover:not(:disabled) {
             background: #45a049;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
@@ -237,7 +235,17 @@ def create_html(flashcards):
         .navigation button:disabled {
             background: #666;
             cursor: not-allowed;
-            transform: none;
+            opacity: 0.5;
+        }
+        #shortcuts-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(45, 45, 45, 0.9);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            color: #aaa;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -249,29 +257,28 @@ def create_html(flashcards):
             const cards = document.querySelectorAll('.flashcard');
             let currentCard = 0;
 
-            function initializeCards() {
-                cards[0].classList.add('active');
+            function showCard(index) {
+                cards.forEach((card, i) => {
+                    card.classList.remove('active');
+                    if (i === index) {
+                        card.classList.add('active');
+                    }
+                });
                 updateNavButtons();
                 updateProgress();
             }
 
             window.nextCard = function() {
                 if (currentCard < cards.length - 1) {
-                    cards[currentCard].classList.remove('active');
                     currentCard++;
-                    cards[currentCard].classList.add('active');
-                    updateNavButtons();
-                    updateProgress();
+                    showCard(currentCard);
                 }
             }
 
             window.previousCard = function() {
                 if (currentCard > 0) {
-                    cards[currentCard].classList.remove('active');
                     currentCard--;
-                    cards[currentCard].classList.add('active');
-                    updateNavButtons();
-                    updateProgress();
+                    showCard(currentCard);
                 }
             }
 
@@ -321,21 +328,16 @@ def create_html(flashcards):
                 }
             }
 
-            document.body.insertAdjacentHTML('afterbegin', `
-                <div id="progress-bar">
-                    <div id="progress-fill"></div>
-                </div>
-                <div id="card-counter">Card 1 of ${cards.length}</div>
-                <div id="shortcuts-info">
-                    Shortcuts: ← Previous | → Next | Space Toggle
-                </div>
-            `);
-
-            initializeCards();
+            // Initialize
+            showCard(0);
         });
     </script>
 </head>
 <body>
+    <div id="progress-bar">
+        <div id="progress-fill"></div>
+    </div>
+    <div id="card-counter"></div>
     <h1>Generated Flashcards</h1>
     <div id="flashcards">'''
 
@@ -360,6 +362,9 @@ def create_html(flashcards):
     <div class="navigation">
         <button id="prevBtn" onclick="previousCard()">← Previous</button>
         <button id="nextBtn" onclick="nextCard()">Next →</button>
+    </div>
+    <div id="shortcuts-info">
+        Shortcuts: ← Previous | → Next | Space Toggle
     </div>
 </body>
 </html>'''
