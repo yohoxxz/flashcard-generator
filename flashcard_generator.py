@@ -370,7 +370,7 @@ def create_html(flashcards):
 </html>'''
 
     try:
-        # Get downloads folder path
+        # Get users downloads folder path
         downloads_path = os.path.join(os.path.expanduser('~'), 'Downloads')
         
         # Generate unique filename with timestamp
