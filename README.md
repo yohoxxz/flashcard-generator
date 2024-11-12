@@ -61,11 +61,9 @@ python flashcard_generator.py
 1. Start the application (either the exe or Python script)
 
 2. Choose your input method:
-   - Option 1: Enter text directly
-     - Type or paste your text
-     - Press Ctrl+Z (Windows) or Ctrl+D (Unix) and Enter when done
-   - Option 2: Provide a PDF file path
-     - Enter the full path to your PDF file
+   - Option 1: Paste Text
+   - Option 2: PDF
+  
 
 3. The program will:
    - Generate flashcards using OpenAI's API
