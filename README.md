@@ -104,7 +104,7 @@ Common Issues:
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Im just a HS student that has no clue what hes doing. Please feel free to submit a Pull Request.
 
 ## License
 
