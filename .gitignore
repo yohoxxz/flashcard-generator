@@ -3,14 +3,73 @@
 .env.*
 !.env.example
 
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.project
+.pydevproject
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# OS specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.lnk
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
 
 # Generated files
 *.html
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.coverage
+.coverage.*
+coverage.xml
+*.cover
+.pytest_cache/
+.tox/
+.nox/
 
-# System files
-.DS_Store
-Thumbs.db
+# Backup files
+*~
+*.bak
+*.swp
+*.tmp
