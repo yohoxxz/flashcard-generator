@@ -15,7 +15,7 @@ def generate_flashcards(text):
     for attempt in range(max_retries):
         try:
             response = client.chat.completions.create(
-                model="gpt-4o-mini",  # gpt-4o-mini is the best model in my opinion.
+                model="gpt-4o-mini",  # gpt-4o-mini is the best model in my opinion for this task.
                 messages=[
                     {"role": "system", "content": "You are an assistant that creates educational flashcards. Create 5-30 (as many as deemed fit) concise question-answer pairs from the provided text."},
                     {"role": "user", "content": f"Create flashcards from this text. Each flashcard should have a clear question and answer:\n\n{text}\n\nFormat EXACTLY as:\nQ: [Question]?\nA: [Answer]\n"}
