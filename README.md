@@ -10,35 +10,55 @@ A Python application that automatically generates study flashcards from text or 
 - Dark mode interface
 - Automatic saving to Downloads folder
 
-## Prerequisites
+## Installation Options
+
+### Option 1: Download the Executable (Windows)
+1. Download the [flashcard_generator_exe.zip](https://github.com/yohoxxz/flashcard-generator/releases/latest/download/flashcard_generator_exe.zip)
+2. Extract the zip file
+3. Run `flashcard_generator.exe`
+4. On first run, you'll need to enter your OpenAI API key
+
+### Option 2: Run from Source
+
+#### Prerequisites
 - Python 3.7 or higher
 - An OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
 
-## Install the ([exe](https://dowload))
+#### Setup Steps
+1. Clone the repository:
+```bash
+git clone https://github.com/yohoxxz/flashcard-generator.git
+cd flashcard-generator
+```
 
-## Manual Setup (if your not using the exe)
+2. Navigate to the Python directory:
+```bash
+cd flashcard_generator_py
+```
 
-1. Create a virtual environment:
+3. Create a virtual environment:
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
-2. Install the required packages:
+4. Install the required packages:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Set up your environment:
+5. Set up your environment:
    - Copy `.env.example` to create a new file called `.env`
    - Open `.env` and replace `your-api-key-here` with your OpenAI API key
 
-## Usage
-
-1. Run the application:
+6. Run the application:
 ```bash
 python flashcard_generator.py
 ```
+
+## Usage
+
+1. Start the application (either the exe or Python script)
 
 2. Choose your input method:
    - Option 1: Enter text directly
@@ -65,13 +85,24 @@ Keyboard Shortcuts:
 - →: Next card
 - ←: Previous card
 
+## Project Structure
+```
+flashcard-generator/
+├── flashcard_generator_exe.zip     # Windows executable
+└── flashcard_generator_py/         # Python source code
+    ├── flashcard_generator.py      # Main application
+    └── requirements.txt            # Python dependencies
+```
+
 ## Troubleshooting
 
 Common Issues:
-- **API Key Not Working**: Verify your API key is correctly copied into the `.env` file
+- **API Key Not Working**: Verify your API key is correctly entered
 - **PDF Issues**: Ensure the PDF is not password-protected or corrupted
 - **HTML Not Opening**: Check your Downloads folder and open the file manually
 - **Empty Response**: If no flashcards are generated, try with a shorter text input
+- **Exe Not Running**: Make sure you've extracted all files from the zip folder
+- **Module Not Found**: Ensure you're in the correct directory and requirements.txt is installed
 
 ## Contributing
 
