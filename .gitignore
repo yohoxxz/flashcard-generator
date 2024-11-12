@@ -1,75 +1,28 @@
-# Environment variables
+# Security and Secrets
 .env
 .env.*
 !.env.example
 
 # Virtual Environment
-.venv/
 venv/
-ENV/
 env/
+.venv/
 
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+*.pyc
 
-# IDE specific files
-.idea/
+# IDE
 .vscode/
-*.swp
-*.swo
-.project
-.pydevproject
-.settings/
-*.sublime-workspace
-*.sublime-project
+.idea/
 
-# OS specific files
+# OS Files
 .DS_Store
 Thumbs.db
-desktop.ini
-*.lnk
-
-# Logs and databases
-*.log
-*.sqlite
-*.db
 
 # Generated files
 *.html
-*.pyc
-*.pyo
-*.pyd
-.Python
-*.coverage
-.coverage.*
-coverage.xml
-*.cover
-.pytest_cache/
-.tox/
-.nox/
 
-# Backup files
-*~
-*.bak
-*.swp
-*.tmp
+# Logs
+*.log
