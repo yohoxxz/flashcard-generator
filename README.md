@@ -14,25 +14,9 @@ A Python application that automatically generates study flashcards from text or 
 - Python 3.7 or higher
 - An OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
 
-## Quick Setup
+## Install the ([exe](https://dowload))
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/flashcard-generator.git
-cd flashcard-generator
-```
-
-2. Run the setup script:
-```bash
-chmod +x setup.sh
-./setup.sh
-```
-
-3. Add your OpenAI API key to the `.env` file
-
-That's it! You're ready to start generating flashcards.
-
-## Manual Setup (if not using setup script)
+## Manual Setup (if your not using the exe)
 
 1. Create a virtual environment:
 ```bash

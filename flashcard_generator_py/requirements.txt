@@ -1,0 +1,5 @@
+openai
+pdfminer.six
+python-dotenv
+customtkinter
+CTkMessagebox
