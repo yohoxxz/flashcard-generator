@@ -17,7 +17,7 @@ def generate_flashcards(text):
             response = client.chat.completions.create(
                 model="gpt-4o-mini",  # gpt-4o-mini is the best model in my opinion.
                 messages=[
-                    {"role": "system", "content": "You are an assistant that creates educational flashcards. Create 5-40 (as many as deemed fit) concise question-answer pairs from the provided text."},
+                    {"role": "system", "content": "You are an assistant that creates educational flashcards. Create 5-30 (as many as deemed fit) concise question-answer pairs from the provided text."},
                     {"role": "user", "content": f"Create flashcards from this text. Each flashcard should have a clear question and answer:\n\n{text}\n\nFormat EXACTLY as:\nQ: [Question]?\nA: [Answer]\n"}
                 ],
                 max_tokens=1500,
@@ -26,8 +26,15 @@ def generate_flashcards(text):
                 frequency_penalty=0.1
             )
             
-            # Process the response to ensure proper formatting
+            # Add more detailed error logging
+            if not response or not response.choices:
+                raise ValueError("Empty response received from OpenAI API")
+                
             content = response.choices[0].message.content.strip()
+            if not content:
+                raise ValueError("Empty content received from OpenAI API")
+                
+            # Process the response to ensure proper formatting
             flashcards = []
             
             # Split into individual flashcards and validate format
@@ -45,14 +52,16 @@ def generate_flashcards(text):
             
         except Exception as e:
             if attempt == max_retries - 1:  # Last attempt
-                print(f"Error generating flashcards after {max_retries} attempts: {str(e)}")
+                print(f"Error generating flashcards after {max_retries} attempts:")
+                print(f"Error type: {type(e).__name__}")
+                print(f"Error details: {str(e)}")
                 print("Falling back to GPT-3.5-turbo...")
                 try:
                     # Fallback to GPT-3.5-turbo with more explicit instructions
                     response = client.chat.completions.create(
                         model="gpt-3.5-turbo",
                         messages=[
-                            {"role": "system", "content": "You are an assistant that creates educational flashcards. Create 5-10 concise question-answer pairs from the provided text."},
+                            {"role": "system", "content": "You are an assistant that creates educational flashcards. Create 5-30 (as many as deemed fit) concise question-answer pairs from the provided text."},
                             {"role": "user", "content": f"Create flashcards from this text. Each flashcard should have a clear question and answer:\n\n{text}\n\nFormat EXACTLY as:\nQ: [Question]?\nA: [Answer]\n"}
                         ],
                         max_tokens=1500,
@@ -85,12 +94,15 @@ def generate_flashcards(text):
 
 def process_pdf(file_path):
     try:
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"PDF file not found: {file_path}")
+            
         text = extract_text(file_path)
-        if not text.strip():
-            raise ValueError("No text could be extracted from the PDF")
+        if not text or not text.strip():
+            raise ValueError("No text could be extracted from the PDF. The file might be empty, corrupted, or password-protected.")
         return text
     except Exception as e:
-        print(f"Error processing PDF: {str(e)}")
+        print(f"Error processing PDF: {type(e).__name__}: {str(e)}")
         return None
 
 def create_html(flashcards):
@@ -381,20 +393,23 @@ def create_html(flashcards):
 def main():
     load_dotenv()
     
-    if not os.getenv('OPENAI_API_KEY'):
+    api_key = os.getenv('OPENAI_API_KEY')
+    if not api_key:
         print("Error: OPENAI_API_KEY not found in environment variables")
+        print("Please add your OpenAI API key to the .env file")
         return
 
     while True:
         try:
-            print("\nOptions:")
+            print("\nFlashcard Generator")
+            print("-" * 20)
             print("1: Enter text input")
             print("2: Upload a PDF")
             print("q: Quit")
-            input_type = input("Choose an option (1/2/q): ").strip().lower()
+            input_type = input("\nChoose an option (1/2/q): ").strip().lower()
             
             if input_type == 'q':
-                print("Goodbye!")
+                print("\nThank you for using Flashcard Generator!")
                 break
 
             if input_type not in ['1', '2']:
