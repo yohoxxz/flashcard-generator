@@ -96,7 +96,7 @@ flashcard-generator/
 
 Common Issues:
 - **API Key Not Working**: Verify your API key is correctly entered
-- **PDF Issues**: Ensure the PDF is not password-protected or corrupted
+- **PDF Issues**: Make sure the PDF is not password-protected or corrupted
 - **HTML Not Opening**: Check your Downloads folder and open the file manually
 - **Empty Response**: If no flashcards are generated, try with a shorter text input
 - **Exe Not Running**: Make sure you've extracted all files from the zip folder
