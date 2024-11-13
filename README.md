@@ -47,11 +47,7 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-5. Set up your environment:
-   - Copy `.env.example` to create a new file called `.env`
-   - Open `.env` and replace `your-api-key-here` with your OpenAI API key
-
-6. Run the application:
+5. Run the application (you will enter you api key on first run):
 ```bash
 python flashcard_generator.py
 ```
