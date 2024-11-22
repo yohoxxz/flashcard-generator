@@ -15,7 +15,6 @@ import time
 def generate_flashcards(text):
     client = OpenAI()
     
-    # Retry logic for API calls
     max_retries = 3
     for attempt in range(max_retries):
         try:
@@ -56,13 +55,13 @@ def generate_flashcards(text):
             return flashcards
             
         except Exception as e:
-            if attempt == max_retries - 1:  # Last attempt
+            if attempt == max_retries - 1:  
                 print(f"Error generating flashcards after {max_retries} attempts:")
                 print(f"Error type: {type(e).__name__}")
                 print(f"Error details: {str(e)}")
                 print("Falling back to GPT-3.5-turbo...")
                 try:
-                    # Fallback to GPT-3.5-turbo with more explicit instructions
+                    # Fallback to GPT-3.5-turbo with more better instructions
                     response = client.chat.completions.create(
                         model="gpt-3.5-turbo",
                         messages=[
@@ -89,7 +88,7 @@ def generate_flashcards(text):
                     
                 except Exception as e2:
                     print(f"Fallback also failed: {str(e2)}")
-                    # Return a test flashcard to help debug the HTML generation
+                    # Return a test flashcard for debug 
                     return [
                         "Q: What is the main topic of the text?\nA: This is a test answer to verify HTML generation.",
                         "Q: Is the flashcard system working?\nA: This is a second test card to check formatting."
@@ -119,7 +118,7 @@ def create_html(flashcards):
     for i, card in enumerate(flashcards):
         print(f"Debug: Card {i+1}: {card[:100]}...")
 
-    # Create the HTML content with improved styling
+    # improved styling
     html_content = '''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -463,7 +462,7 @@ class FlashcardGeneratorGUI:
         )
         self.generate_button.grid(row=2, column=0, padx=20, pady=20, sticky="ew")
         
-        # Create progress bar (initially hidden)
+        
         self.progress = ctk.CTkProgressBar(self.main_frame)
         self.progress.set(0)
         
@@ -558,7 +557,7 @@ class FlashcardGeneratorGUI:
     def run(self):
         self.window.mainloop()
 
-# Add this new function after the imports
+
 def setup_api_key():
     if not os.path.exists('.env'):
         dialog = ctk.CTkInputDialog(
@@ -588,7 +587,6 @@ def setup_api_key():
             return False
     return True
 
-# Modify the main() function
 def main():
     print("Starting application...")
     
@@ -623,6 +621,6 @@ def main():
     print("Running main loop...")
     app.run()
 
-# Add this at the very end of the file, after the main() function
+
 if __name__ == "__main__":
     main()
