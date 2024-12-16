@@ -19,7 +19,7 @@ def generate_flashcards(text):
     for attempt in range(max_retries):
         try:
             response = client.chat.completions.create(
-                model="gpt-4o-mini",  # gpt-4o-mini is the best model in my opinion for this task.
+                model="gpt-4o-mini",  # gpt-4o-mini because its cheap.
                 messages=[
                     {"role": "system", "content": "You are an assistant that creates educational flashcards. Create 5-30 (as many as deemed fit) concise question-answer pairs from the provided text."},
                     {"role": "user", "content": f"Create flashcards from this text. Each flashcard should have a clear question and answer:\n\n{text}\n\nFormat EXACTLY as:\nQ: [Question]?\nA: [Answer]\n"}
@@ -30,7 +30,7 @@ def generate_flashcards(text):
                 frequency_penalty=0.1
             )
             
-            # Add more detailed error logging
+            # Add more error logging
             if not response or not response.choices:
                 raise ValueError("Empty response received from OpenAI API")
                 
@@ -38,10 +38,9 @@ def generate_flashcards(text):
             if not content:
                 raise ValueError("Empty content received from OpenAI API")
                 
-            # Process the response to ensure proper formatting
             flashcards = []
             
-            # Split into individual flashcards and validate format
+            
             cards = content.split('\n\n')
             for card in cards:
                 lines = card.strip().split('\n')
@@ -118,7 +117,7 @@ def create_html(flashcards):
     for i, card in enumerate(flashcards):
         print(f"Debug: Card {i+1}: {card[:100]}...")
 
-    # improved styling
+   
     html_content = '''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -374,15 +373,15 @@ def create_html(flashcards):
 </html>'''
 
     try:
-        # Get users downloads folder path
+        # Get download folder path
         downloads_path = os.path.join(os.path.expanduser('~'), 'Downloads')
         
-        # Generate unique filename with timestamp
+        # Gen filename with timestamp
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"flashcards_{timestamp}.html"
         output_file = os.path.join(downloads_path, filename)
         
-        # Normalize the path to use correct system separators
+       
         output_file = os.path.normpath(output_file)
         
         with open(output_file, "w", encoding='utf-8') as file:
@@ -396,21 +395,21 @@ def create_html(flashcards):
 
 class FlashcardGeneratorGUI:
     def __init__(self):
-        print("Initializing GUI...")  # Debug print
+        print("Initializing GUI...")  
         self.window = ctk.CTk()
         self.window.title("Flashcard Generator")
         self.window.geometry("800x600")
         
-        # Set theme
-        print("Setting theme...")  # Debug print
+       
+        print("Setting theme...")  
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("green")
         
-        # Configure grid
+        
         self.window.grid_columnconfigure(0, weight=1)
         self.window.grid_rowconfigure(1, weight=1)
         
-        # Create header
+        #Header
         self.header = ctk.CTkLabel(
             self.window,
             text="Flashcard Generator",
@@ -418,17 +417,17 @@ class FlashcardGeneratorGUI:
         )
         self.header.grid(row=0, column=0, pady=20, sticky="ew")
         
-        # Create main frame
+        # Cmain frame
         self.main_frame = ctk.CTkFrame(self.window)
         self.main_frame.grid(row=1, column=0, padx=20, pady=(0, 20), sticky="nsew")
         self.main_frame.grid_columnconfigure(0, weight=1)
         self.main_frame.grid_rowconfigure(1, weight=1)
         
-        # Create input selection frame
+        # Create input selection 
         self.input_frame = ctk.CTkFrame(self.main_frame)
         self.input_frame.grid(row=0, column=0, padx=20, pady=20, sticky="ew")
         
-        # Add input type selector
+        # type selector
         self.input_type = ctk.CTkSegmentedButton(
             self.input_frame,
             values=["Text Input", "PDF Upload"],
@@ -437,7 +436,7 @@ class FlashcardGeneratorGUI:
         self.input_type.grid(row=0, column=0, padx=20, pady=20)
         self.input_type.set("Text Input")
         
-        # Create text input
+        # text input
         self.text_input = ctk.CTkTextbox(
             self.main_frame,
             height=300,
@@ -445,7 +444,7 @@ class FlashcardGeneratorGUI:
         )
         self.text_input.grid(row=1, column=0, padx=20, pady=(0, 20), sticky="nsew")
         
-        # Create PDF upload button (initially hidden)
+        # PDF upload button (its hidden in the beginning)
         self.pdf_button = ctk.CTkButton(
             self.main_frame,
             text="Select PDF File",
@@ -453,7 +452,7 @@ class FlashcardGeneratorGUI:
             height=40
         )
         
-        # Create generate button
+        # Make generate button
         self.generate_button = ctk.CTkButton(
             self.main_frame,
             text="Generate Flashcards",
@@ -606,7 +605,7 @@ def main():
         print("No API key found!")
         if not setup_api_key():
             return
-        load_dotenv()  # Reload environment after creating .env
+        load_dotenv()  # Reload environment after creating .env for api key
         api_key = os.getenv('OPENAI_API_KEY')
         if not api_key:
             CTkMessagebox(
